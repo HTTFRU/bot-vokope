@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrenchBot - Авторизация</title>
+    <title>TrenchBot - Автоматизация игры</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -34,7 +34,7 @@
         .input-title { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: bold; }
         
         textarea {
-            width: 100%; height: 70px; background: #0b0d12; border: 1px solid var(--border-color);
+            width: 100%; height: 50px; background: #0b0d12; border: 1px solid var(--border-color);
             color: #fff; padding: 8px; border-radius: 6px; font-size: 11px; resize: none; margin-bottom: 8px;
         }
 
@@ -50,10 +50,12 @@
         .sync-status.success { border-color: #00c853; color: #00c853; }
         .sync-status.error { border-color: #ff4d4f; color: #ff4d4f; }
 
-        .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+        .section-title { font-size: 13px; font-weight: bold; color: var(--text-muted); margin-bottom: 8px; margin-top: 12px; }
+
+        .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
         .res-box { background: var(--card-bg); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; text-align: center; }
         .res-title { font-size: 11px; color: var(--text-muted); }
-        .res-val { font-size: 15px; font-weight: bold; margin-top: 4px; }
+        .res-val { font-size: 15px; font-weight: bold; margin-top: 4px; color: var(--accent-orange); }
     </style>
 </head>
 <body>
@@ -61,33 +63,64 @@
     <div class="header">
         <div class="user-info">
             <span>👤</span>
-            <span id="username">@user</span>
+            <span id="username">@xuyundz</span>
         </div>
-        <span style="font-size: 11px; color: var(--text-muted);">Ручной режим</span>
+        <span style="font-size: 11px; color: var(--text-muted);">Панель управления</span>
     </div>
 
     <div class="input-box">
-        <div class="input-title">🔐 Вставьте Telegram initData (из Session Storage):</div>
-        <textarea id="initdata-input" placeholder="user=%7B%22id%22..."></textarea>
+        <div class="input-title">🔐 Bearer Токен авторизации:</div>
+        <textarea id="initdata-input" placeholder="Bearer 25a3ddbc..."></textarea>
         <button class="btn-sync" onclick="syncWithGame()">🔄 Синхронизировать с игрой</button>
     </div>
 
     <div class="sync-status" id="sync-banner">
-        ⏳ Ожидание ввода данных...
+        ⏳ Ожидание синхронизации...
+    </div>
+
+    <div class="section-title">📦 Основные ресурсы и валюты</div>
+    <div class="res-grid">
+        <div class="res-box">
+            <div class="res-title">⛽ Топливо</div>
+            <div class="res-val" id="res-fuel">--</div>
+        </div>
+        <div class="res-box">
+            <div class="res-title">🏷 Жетоны</div>
+            <div class="res-val" id="res-tokens">--</div>
+        </div>
+        <div class="res-box">
+            <div class="res-title">🎟 Талоны</div>
+            <div class="res-val" id="res-coupons">--</div>
+        </div>
     </div>
 
     <div class="res-grid">
         <div class="res-box">
-            <div class="res-title">⚡ Энергия</div>
-            <div class="res-val" id="res-energy">--</div>
+            <div class="res-title">✉️ Депеши</div>
+            <div class="res-val" id="res-letters">--</div>
         </div>
         <div class="res-box">
-            <div class="res-title">🪙 Золото</div>
-            <div class="res-val" id="res-gold">--</div>
+            <div class="res-title">🍞 Провизия</div>
+            <div class="res-val" id="res-food">--</div>
+        </div>
+        <div class="res-box">
+            <div class="res-title">🧨 Гильзы</div>
+            <div class="res-val" id="res-shells">--</div>
+        </div>
+    </div>
+
+    <div class="res-grid">
+        <div class="res-box">
+            <div class="res-title">📜 Облигации</div>
+            <div class="res-val" id="res-bonds">--</div>
+        </div>
+        <div class="res-box">
+            <div class="res-title">💣 Порох</div>
+            <div class="res-val" id="res-powder">--</div>
         </div>
         <div class="res-box">
             <div class="res-title">🎖 Уровень</div>
-            <div class="res-val" id="res-level">--</div>
+            <div class="res-val" id="res-level" style="color: #00e676;">--</div>
         </div>
     </div>
 
@@ -100,12 +133,12 @@
 
             if (!initDataVal) {
                 banner.className = 'sync-status error';
-                banner.innerText = '❌ Поле initData пустое!';
+                banner.innerText = '❌ Поле токена пустое!';
                 return;
             }
 
             banner.className = 'sync-status';
-            banner.innerText = '🔄 Отправка запроса на сервер игры...';
+            banner.innerText = '🔄 Синхронизация с сервером игры...';
 
             try {
                 const response = await fetch(`${BACKEND_URL}/api/sync`, {
@@ -121,10 +154,17 @@
                     banner.innerText = '✅ Синхронизация успешна!';
 
                     if (result.game_data) {
-                        const state = result.game_data;
-                        document.getElementById('res-energy').innerText = state.energy || state.stamina || '100';
-                        document.getElementById('res-gold').innerText = state.gold || state.money || '0';
-                        document.getElementById('res-level').innerText = state.level || '1';
+                        const d = result.game_data;
+                        // Безопасное заполнение полей из ответа сервера (поддерживаем разные варианты ключей)
+                        document.getElementById('res-fuel').innerText = d.fuel ?? d.energy ?? '0';
+                        document.getElementById('res-tokens').innerText = d.tokens ?? d.jetons ?? '0';
+                        document.getElementById('res-coupons').innerText = d.coupons ?? '0';
+                        document.getElementById('res-letters').innerText = d.letters ?? d.messages ?? '0';
+                        document.getElementById('res-food').innerText = d.food ?? d.provisions ?? '0';
+                        document.getElementById('res-shells').innerText = d.shells ?? d.bullets ?? '0';
+                        document.getElementById('res-bonds').innerText = d.bonds ?? '0';
+                        document.getElementById('res-powder').innerText = d.powder ?? '0';
+                        document.getElementById('res-level').innerText = d.level ?? '1';
                     }
                 } else {
                     banner.className = 'sync-status error';
