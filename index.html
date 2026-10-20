@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrenchBot - Авторизация</title>
+    <title>TrenchBot - Ручной ввод InitData</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -27,16 +27,27 @@
 
         .user-info { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #a855f7; }
 
+        /* Блок ручного ввода */
+        .input-box {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            padding: 12px; border-radius: 10px; margin-bottom: 12px;
+        }
+        .input-title { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: bold; }
+        
+        textarea {
+            width: 100%; height: 70px; background: #0b0d12; border: 1px solid var(--border-color);
+            color: #fff; padding: 8px; border-radius: 6px; font-size: 11px; resize: none; margin-bottom: 8px;
+        }
+
         .btn-sync {
-            background: #112a18; color: #00e676; border: 1px solid #00c853;
-            padding: 6px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: bold;
+            width: 100%; background: #112a18; color: #00e676; border: 1px solid #00c853;
+            padding: 10px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: bold;
         }
 
         .sync-status {
             background: var(--card-bg); border: 1px solid var(--border-color);
-            padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; text-align: center;
+            padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 12px; text-align: center;
         }
-
         .sync-status.success { border-color: #00c853; color: #00c853; }
         .sync-status.error { border-color: #ff4d4f; color: #ff4d4f; }
 
@@ -48,21 +59,25 @@
 </head>
 <body>
 
-    <!-- Шапка аккаунта -->
     <div class="header">
         <div class="user-info">
             <span>👤</span>
             <span id="username">@user</span>
         </div>
-        <button class="btn-sync" onclick="syncWithGame()">🔄 Синхронизировать</button>
+        <span style="font-size: 11px; color: var(--text-muted);">Ручной режим</span>
     </div>
 
-    <!-- Индикатор статуса синхронизации -->
+    <!-- Поле для ручной вставки initData -->
+    <div class="input-box">
+        <div class="input-title">🔐 Вставьте Telegram initData:</div>
+        <textarea id="initdata-input" placeholder="query_id=...&user=...&hash=..."></textarea>
+        <button class="btn-sync" onclick="syncWithGame()">🔄 Синхронизировать с игрой</button>
+    </div>
+
     <div class="sync-status" id="sync-banner">
-        ⏳ Ожидание инициализации Telegram...
+        ⏳ Ожидание ввода данных...
     </div>
 
-    <!-- Блок игровых ресурсов -->
     <div class="res-grid">
         <div class="res-box">
             <div class="res-title">⚡ Энергия</div>
@@ -82,43 +97,44 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Указываем URL твоего сервера Python (пока локальный или на хостинге)
         const BACKEND_URL = "http://localhost:8000"; 
 
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('username').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
-        }
-
-        // Автоматическая синхронизация при входе в приложение
+        // Автоматически подставляем из Telegram, если открыто внутри мессенджера
         window.onload = function() {
-            syncWithGame();
+            if (tg.initData) {
+                document.getElementById('initdata-input').value = tg.initData;
+            }
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                document.getElementById('username').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
+            }
         };
 
         async function syncWithGame() {
             const banner = document.getElementById('sync-banner');
-            banner.className = 'sync-status';
-            banner.innerText = '🔄 Подключение к игре и синхронизация...';
+            const initDataVal = document.getElementById('initdata-input').value.trim();
 
-            if (!tg.initData) {
+            if (!initDataVal) {
                 banner.className = 'sync-status error';
-                banner.innerText = '❌ Ошибка: Telegram initData не найден (откройте в Telegram)';
+                banner.innerText = '❌ Поле initData пустое!';
                 return;
             }
+
+            banner.className = 'sync-status';
+            banner.innerText = '🔄 Отправка запроса на сервер игры...';
 
             try {
                 const response = await fetch(`${BACKEND_URL}/api/sync`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ initData: tg.initData })
+                    body: JSON.stringify({ initData: initDataVal })
                 });
 
                 const result = await response.json();
 
                 if (result.status === 'success') {
                     banner.className = 'sync-status success';
-                    banner.innerText = '✅ Синхронизировано с аккаунтом игры!';
+                    banner.innerText = '✅ Синхронизация успешна!';
 
-                    // Заполняем данные с сервера игры в интерфейс
                     if (result.game_data) {
                         const state = result.game_data;
                         document.getElementById('res-energy').innerText = state.energy || state.stamina || '100';
@@ -131,7 +147,7 @@
                 }
             } catch (err) {
                 banner.className = 'sync-status error';
-                banner.innerText = '⚠️ Сервер бота недоступен (проверьте running Python server)';
+                banner.innerText = '⚠️ Ошибка: Сервер Python (server.py) не запущен!';
             }
         }
     </script>
