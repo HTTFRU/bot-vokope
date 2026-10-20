@@ -54,14 +54,26 @@
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .card-title { font-size: 14px; font-weight: bold; color: #fff; }
 
+        .progress-bar-bg { width: 100%; height: 8px; background: #07080b; border-radius: 4px; overflow: hidden; margin: 6px 0; border: 1px solid var(--border-color); }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff5252, #ff7b00); width: 0%; }
+        .card-stats { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
+
+        .limit-info { background: rgba(255,255,255,0.03); border: 1px dashed var(--border-color); border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 12px; }
+
         select { width: 100%; background: #07080b; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; font-size: 11px; margin-bottom: 8px; }
         .btn-action { width: 100%; background: #112a18; color: var(--accent-green); border: 1px solid var(--accent-green); padding: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; margin-top: 6px; }
         .btn-action:hover { background: #1b3e24; }
-        
+        .btn-auto-next { width: 100%; background: #2a1f0a; color: var(--accent-gold); border: 1px solid var(--accent-gold); padding: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; margin-top: 6px; }
+        .btn-auto-next:hover { background: #3d2d0f; }
+
         .checkbox-container { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; cursor: pointer; }
         .checkbox-container input { width: 15px; height: 15px; accent-color: var(--accent-green); cursor: pointer; }
 
-        .timer-badge { background: rgba(255,215,0,0.1); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 6px 10px; border-radius: 6px; font-size: 11px; text-align: center; margin-top: 8px; }
+        /* Игровой плашка-таймер */
+        .game-timer-box {
+            background: #231c0d; border: 2px solid var(--accent-gold); color: var(--accent-gold);
+            padding: 8px; border-radius: 8px; font-size: 13px; font-weight: bold; text-align: center; margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -102,12 +114,18 @@
     <div id="main-tab" class="tab-content active">
         <div class="card">
             <div class="card-title" style="margin-bottom: 6px;">ℹ️ Статус сессии</div>
-            <div style="font-size: 12px; color: var(--text-muted);">Перейдите во вкладку «Трофеи» для настройки авто-просьбы у друзей.</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Перейдите во вкладку «Трофеи» для автопросьбы недостающих элементов.</div>
         </div>
     </div>
 
     <div id="bosses-tab" class="tab-content">
-        <div id="active-bosses-list"><div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px;">Загрузка...</div></div>
+        <div class="limit-info">
+            <span>🎯 Убийств боссов сегодня:</span>
+            <strong id="boss-kills-today" style="color: var(--accent-gold);">-- / --</strong>
+        </div>
+        <div id="active-bosses-list">
+            <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px;">Загрузка...</div>
+        </div>
     </div>
 
     <div id="fronts-tab" class="tab-content">
@@ -126,18 +144,24 @@
     <div id="trophies-tab" class="tab-content">
         <div class="card">
             <div class="card-title" style="margin-bottom: 8px;">🎁 Просьба трофеев у друзей</div>
-            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
-                Выберите элемент коллекции, который вам нужен. Бот будет просить его у друзей сразу по истечении КД.
+
+            <!-- Игровой плашка-таймер -->
+            <div id="trophy-cooldown-box" class="game-timer-box" style="display: none;">
+                ⏳ Придёт через <span id="cooldown-timer-val">--:--:--</span>
             </div>
 
-            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Предмет коллекции:</div>
-            <select id="trophy-select">
+            <div style="margin-top: 10px;">
+                <button class="btn-auto-next" onclick="requestNextMissingTrophy()">✨ Просить следующую недостающую</button>
+            </div>
+
+            <div style="font-size: 11px; color: var(--text-muted); margin: 12px 0 4px 0;">Или выберите вручную:</div>
+            <select id="trophy-item-select">
                 <optgroup label="✉️ Полевая почта">
                     <option value="post_1">Письмо-треугольник (post_1)</option>
                     <option value="post_2">Открытка с цветами (post_2)</option>
                     <option value="post_3">Фотография в рамке (post_3)</option>
                     <option value="post_4">Сверток фронтовой (post_4)</option>
-                    <option value="post_5" selected>Посылка с сургучом (post_5)</option>
+                    <option value="post_5">Посылка с сургучом (post_5)</option>
                     <option value="post_6">Печать полевая (post_6)</option>
                 </optgroup>
                 <optgroup label="🎖 Трофеи">
@@ -158,23 +182,23 @@
                 </optgroup>
             </select>
 
-            <button class="btn-action" onclick="sendTrophyRequest()">📩 Отправить просьбу сейчас</button>
+            <button class="btn-action" onclick="sendTrophyRequestManual()">📩 Отправить выбранную просьбу</button>
 
             <div style="margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 10px;">
                 <label class="checkbox-container">
                     <input type="checkbox" id="auto-trophy-checkbox" onchange="toggleAutoTrophy(this.checked)">
-                    <span>🔁 Запрашивать автоматически по истечении времени (КД)</span>
+                    <span>🔁 Автоматически просить недостающие при готовности КД</span>
                 </label>
-                <div id="auto-timer-status" class="timer-badge" style="display: none;">
-                    ⏳ Автопросьба активна. Ожидание КД...
-                </div>
             </div>
         </div>
     </div>
 
     <script>
         const BACKEND_URL = "http://localhost:8000";
-        let autoTrophyInterval = null;
+        let gameState = null;
+        let lastRequestSince = 0;
+        let cooldownInterval = null;
+        const COOLDOWN_DURATION_MS = 2 * 60 * 60 * 1000; // 2 часа КД
 
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -200,7 +224,9 @@
                 if (result.status === 'success' && result.game_data && result.game_data.state) {
                     banner.className = 'sync-status success';
                     banner.innerText = '✅ Синхронизация успешна!';
-                    const s = result.game_data.state;
+
+                    gameState = result.game_data.state;
+                    const s = gameState;
 
                     document.getElementById('user-name').innerText = `@${s.name || 'Fow'} (Lvl ${s.level || 1})`;
                     document.getElementById('user-rubles').innerText = `${s.rubles || 0} ₽`;
@@ -214,21 +240,81 @@
                     document.getElementById('res-bonds').innerText = s.bonds ?? 0;
                     document.getElementById('res-powder').innerText = s.powder ?? 0;
 
-                    // Если у профиля был прошлый запрос
-                    if (s.collectionRequest && s.collectionRequest.items && s.collectionRequest.items.length > 0) {
-                        const lastItem = s.collectionRequest.items[0];
-                        const select = document.getElementById('trophy-select');
-                        if ([...select.options].some(o => o.value === lastItem)) {
-                            select.value = lastItem;
-                        }
+                    document.getElementById('boss-kills-today').innerText = `${s.bossKillsToday ?? 0} (доп. ${s.bossExtraToday ?? 0})`;
+                    renderBosses(s.activeBosses || {});
+
+                    // Обновляем плашку КД из сведений игры
+                    if (s.collectionRequest && s.collectionRequest.since) {
+                        lastRequestSince = s.collectionRequest.since;
+                        startCooldownTimer();
                     }
                 }
             } catch (err) {}
         }
 
-        async function sendTrophyRequest() {
+        function startCooldownTimer() {
+            if (cooldownInterval) clearInterval(cooldownInterval);
+            const box = document.getElementById('trophy-cooldown-box');
+            const timerVal = document.getElementById('cooldown-timer-val');
+
+            function updateTimer() {
+                const now = Date.now();
+                const nextAvailableAt = lastRequestSince + COOLDOWN_DURATION_MS;
+                const remaining = nextAvailableAt - now;
+
+                if (remaining <= 0) {
+                    box.style.display = 'none';
+                    clearInterval(cooldownInterval);
+                    // Если включен авто-режим, запрашиваем следующую
+                    if (document.getElementById('auto-trophy-checkbox').checked) {
+                        requestNextMissingTrophy();
+                    }
+                } else {
+                    box.style.display = 'block';
+                    const hrs = Math.floor(remaining / (1000 * 60 * 60));
+                    const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                    const secs = Math.floor((remaining % (1000 * 60)) / 1000);
+                    timerVal.innerText = `${hrs}:${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                }
+            }
+
+            updateTimer();
+            cooldownInterval = setInterval(updateTimer, 1000);
+        }
+
+        function findNextMissingItem() {
+            if (!gameState || !gameState.collections) return 'post_1';
+
+            const collections = gameState.collections;
+            const keys = ['post', 'trophy', 'life', 'flasks', 'ravens', 'medals'];
+
+            for (let colKey of keys) {
+                if (collections[colKey] && collections[colKey].items) {
+                    const itemsArr = collections[colKey].items;
+                    for (let idx = 0; idx < itemsArr.length; idx++) {
+                        // Если предметов 0 — это и есть недостающий!
+                        if (itemsArr[idx] === 0) {
+                            return `${colKey}_${idx + 1}`;
+                        }
+                    }
+                }
+            }
+            return 'post_5'; // По умолчанию
+        }
+
+        async function requestNextMissingTrophy() {
+            const nextItem = findNextMissingItem();
+            document.getElementById('trophy-item-select').value = nextItem;
+            await sendTrophyRequest(nextItem);
+        }
+
+        async function sendTrophyRequestManual() {
+            const item = document.getElementById('trophy-item-select').value;
+            await sendTrophyRequest(item);
+        }
+
+        async function sendTrophyRequest(itemId) {
             const token = document.getElementById('initdata-input').value.trim();
-            const itemId = document.getElementById('trophy-select').value;
             const banner = document.getElementById('sync-banner');
 
             if (!token) { alert('Введите токен!'); return; }
@@ -245,24 +331,103 @@
                 const result = await res.json();
                 banner.className = 'sync-status success';
                 banner.innerText = `✅ ${result.message}`;
+
+                // Обновляем метку времени и запускаем КД-таймер
+                lastRequestSince = Date.now();
+                startCooldownTimer();
             } catch (err) {
                 banner.className = 'sync-status error';
-                banner.innerText = '⚠️ Ошибка отправки просьбы!';
+                banner.innerText = '⚠️ Ошибка отправки!';
             }
         }
 
-        function toggleAutoTrophy(enabled) {
-            const badge = document.getElementById('auto-timer-status');
-            if (enabled) {
-                badge.style.display = 'block';
-                // Сразу делаем запрос и включаем проверку каждые 15 минут
-                sendTrophyRequest();
-                autoTrophyInterval = setInterval(() => {
-                    sendTrophyRequest();
-                }, 15 * 60 * 1000); 
-            } else {
-                badge.style.display = 'none';
-                if (autoTrophyInterval) clearInterval(autoTrophyInterval);
+        function renderBosses(activeBosses) {
+            const container = document.getElementById('active-bosses-list');
+            const keys = Object.keys(activeBosses);
+            if (keys.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 15px;">Нет активных боссов.</div>';
+                return;
+            }
+
+            const presetsHtml = `
+                <option value="1">⚙️ Пресет 1: Одиночный удар</option>
+                <option value="2">⚙️ Пресет 2: Усиленный удар х2</option>
+                <option value="3">⚙️ Пресет 3: Серия ударов х5</option>
+                <option value="4">⚙️ Пресет 4: Осколочный залп</option>
+                <option value="5">⚙️ Пресет 5: Фугасный обстрел</option>
+            `;
+
+            let html = '';
+            keys.forEach(bossKey => {
+                const b = activeBosses[bossKey];
+                const hpPercent = Math.max(0, Math.min(100, (b.hp / b.maxHp) * 100)).toFixed(1);
+
+                html += `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">👹 Босс: ${b.id.toUpperCase()}</div>
+                            <div style="font-size: 11px; color: var(--accent-gold);">Урон: ${b.myDamage || 0}</div>
+                        </div>
+                        <div class="card-stats"><span>Здоровье: ${(b.hp || 0).toLocaleString()} / ${(b.maxHp || 0).toLocaleString()}</span><span>${hpPercent}%</span></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${hpPercent}%;"></div></div>
+                        <div style="margin-top: 8px;">
+                            <select id="preset-select-${b.id}">${presetsHtml}</select>
+                            <button class="btn-action" style="background: #3a1111; color: var(--accent-red); border-color: var(--accent-red);" onclick="attackBoss('${b.id}')">⚔️ Напасть на босса</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        async function attackBoss(bossId) {
+            const token = document.getElementById('initdata-input').value.trim();
+            const presetId = parseInt(document.getElementById(`preset-select-${bossId}`).value);
+            const banner = document.getElementById('sync-banner');
+
+            if (!token) { alert('Введите токен!'); return; }
+            banner.className = 'sync-status';
+            banner.innerText = `⚔️ Атака на босса ${bossId.toUpperCase()}...`;
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/attack`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ initData: token, presetId, bossId })
+                });
+                const result = await res.json();
+                banner.className = 'sync-status success';
+                banner.innerText = `✅ ${result.message}`;
+                setTimeout(syncWithGame, 1200);
+            } catch (err) {
+                banner.className = 'sync-status error';
+                banner.innerText = '⚠️ Ошибка атаки!';
+            }
+        }
+
+        async function runFrontAuto() {
+            const token = document.getElementById('initdata-input').value.trim();
+            const frontId = document.getElementById('front-select').value;
+            const spendSupply = document.getElementById('spend-supply-checkbox').checked;
+            const banner = document.getElementById('sync-banner');
+
+            if (!token) { alert('Введите токен!'); return; }
+            banner.className = 'sync-status';
+            banner.innerText = `🚀 Автопроход ${frontId}...`;
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/front/run`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ initData: token, frontId, spendSupply })
+                });
+                const result = await res.json();
+                banner.className = 'sync-status success';
+                banner.innerText = `✅ ${result.message}`;
+                setTimeout(syncWithGame, 1200);
+            } catch (err) {
+                banner.className = 'sync-status error';
+                banner.innerText = '⚠️ Ошибка автопрохода!';
             }
         }
     </script>
