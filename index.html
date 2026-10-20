@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrenchBot - Ручной ввод InitData</title>
+    <title>TrenchBot - Авторизация</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -27,7 +27,6 @@
 
         .user-info { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #a855f7; }
 
-        /* Блок ручного ввода */
         .input-box {
             background: var(--card-bg); border: 1px solid var(--border-color);
             padding: 12px; border-radius: 10px; margin-bottom: 12px;
@@ -67,10 +66,9 @@
         <span style="font-size: 11px; color: var(--text-muted);">Ручной режим</span>
     </div>
 
-    <!-- Поле для ручной вставки initData -->
     <div class="input-box">
-        <div class="input-title">🔐 Вставьте Telegram initData:</div>
-        <textarea id="initdata-input" placeholder="query_id=...&user=...&hash=..."></textarea>
+        <div class="input-title">🔐 Вставьте Telegram initData (из Session Storage):</div>
+        <textarea id="initdata-input" placeholder="user=%7B%22id%22..."></textarea>
         <button class="btn-sync" onclick="syncWithGame()">🔄 Синхронизировать с игрой</button>
     </div>
 
@@ -94,20 +92,7 @@
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
         const BACKEND_URL = "http://localhost:8000"; 
-
-        // Автоматически подставляем из Telegram, если открыто внутри мессенджера
-        window.onload = function() {
-            if (tg.initData) {
-                document.getElementById('initdata-input').value = tg.initData;
-            }
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                document.getElementById('username').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
-            }
-        };
 
         async function syncWithGame() {
             const banner = document.getElementById('sync-banner');
