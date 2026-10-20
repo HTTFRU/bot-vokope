@@ -43,30 +43,25 @@
         .sync-status.success { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); display: block; }
         .sync-status.error { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); display: block; }
 
-        .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-        .tab-btn { flex: 1; padding: 10px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; }
+        .tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+        .tab-btn { flex: 1; padding: 8px 2px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; font-size: 10px; font-weight: bold; cursor: pointer; text-align: center; }
         .tab-btn.active { background: #232838; border-color: #4a526d; color: #fff; }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .boss-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
-        .boss-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .boss-title { font-size: 14px; font-weight: bold; color: #fff; }
-        .boss-badge { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: rgba(255,215,0,0.15); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .card-title { font-size: 14px; font-weight: bold; color: #fff; }
 
-        .progress-bar-bg { width: 100%; height: 8px; background: #07080b; border-radius: 4px; overflow: hidden; margin: 6px 0; border: 1px solid var(--border-color); }
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff5252, #ff7b00); width: 0%; }
-        .boss-stats { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
-
-        .limit-info { background: rgba(255,255,255,0.03); border: 1px dashed var(--border-color); border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 12px; }
-
-        /* Контроллер атак и пресетов */
-        .attack-panel { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); }
-        .attack-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
         select { width: 100%; background: #07080b; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; font-size: 11px; margin-bottom: 8px; }
-        .btn-attack { width: 100%; background: #3a1111; color: var(--accent-red); border: 1px solid var(--accent-red); padding: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; }
-        .btn-attack:hover { background: #4e1717; }
+        .btn-action { width: 100%; background: #112a18; color: var(--accent-green); border: 1px solid var(--accent-green); padding: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; margin-top: 6px; }
+        .btn-action:hover { background: #1b3e24; }
+        
+        .checkbox-container { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; cursor: pointer; }
+        .checkbox-container input { width: 15px; height: 15px; accent-color: var(--accent-green); cursor: pointer; }
+
+        .timer-badge { background: rgba(255,215,0,0.1); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 6px 10px; border-radius: 6px; font-size: 11px; text-align: center; margin-top: 8px; }
     </style>
 </head>
 <body>
@@ -99,29 +94,87 @@
 
     <div class="tabs">
         <div class="tab-btn active" onclick="switchTab('main-tab', this)">📊 Главная</div>
-        <div class="tab-btn" onclick="switchTab('bosses-tab', this)">👹 Боссы и Атака</div>
+        <div class="tab-btn" onclick="switchTab('bosses-tab', this)">👹 Боссы</div>
+        <div class="tab-btn" onclick="switchTab('fronts-tab', this)">⚔️ Фронты</div>
+        <div class="tab-btn" onclick="switchTab('trophies-tab', this)">🏆 Трофеи</div>
     </div>
 
     <div id="main-tab" class="tab-content active">
-        <div class="boss-card">
-            <div class="boss-title" style="margin-bottom: 6px;">ℹ️ Статус сессии</div>
-            <div style="font-size: 12px; color: var(--text-muted);">Аккаунт успешно подключен. Выберите вкладку «Боссы и Атака» для управления рейдами.</div>
+        <div class="card">
+            <div class="card-title" style="margin-bottom: 6px;">ℹ️ Статус сессии</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Перейдите во вкладку «Трофеи» для настройки авто-просьбы у друзей.</div>
         </div>
     </div>
 
     <div id="bosses-tab" class="tab-content">
-        <div class="limit-info">
-            <span>🎯 Убийств боссов сегодня:</span>
-            <strong id="boss-kills-today" style="color: var(--accent-gold);">-- / --</strong>
-        </div>
+        <div id="active-bosses-list"><div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px;">Загрузка...</div></div>
+    </div>
 
-        <div id="active-bosses-list">
-            <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px;">Синхронизируйте аккаунт для загрузки боссов.</div>
+    <div id="fronts-tab" class="tab-content">
+        <div class="card">
+            <div class="card-title" style="margin-bottom: 8px;">🗺 Автопроход фронтов</div>
+            <select id="front-select">
+                <option value="1-1">Фронт 1-1</option><option value="1-2">Фронт 1-2</option>
+                <option value="2-1">Фронт 2-1</option><option value="3-4">Фронт 3-4</option>
+            </select>
+            <label class="checkbox-container"><input type="checkbox" id="spend-supply-checkbox" checked> Тратить топливо</label>
+            <button class="btn-action" onclick="runFrontAuto()">🚀 Запустить автопроход</button>
+        </div>
+    </div>
+
+    <!-- Вкладка Трофеи -->
+    <div id="trophies-tab" class="tab-content">
+        <div class="card">
+            <div class="card-title" style="margin-bottom: 8px;">🎁 Просьба трофеев у друзей</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+                Выберите элемент коллекции, который вам нужен. Бот будет просить его у друзей сразу по истечении КД.
+            </div>
+
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Предмет коллекции:</div>
+            <select id="trophy-select">
+                <optgroup label="✉️ Полевая почта">
+                    <option value="post_1">Письмо-треугольник (post_1)</option>
+                    <option value="post_2">Открытка с цветами (post_2)</option>
+                    <option value="post_3">Фотография в рамке (post_3)</option>
+                    <option value="post_4">Сверток фронтовой (post_4)</option>
+                    <option value="post_5" selected>Посылка с сургучом (post_5)</option>
+                    <option value="post_6">Печать полевая (post_6)</option>
+                </optgroup>
+                <optgroup label="🎖 Трофеи">
+                    <option value="trophy_1">Бинокль (trophy_1)</option>
+                    <option value="trophy_2">Фронтовой нож (trophy_2)</option>
+                    <option value="trophy_3">Жетон солдатский (trophy_3)</option>
+                    <option value="trophy_4">Каска (trophy_4)</option>
+                    <option value="trophy_5">Фуражка (trophy_5)</option>
+                    <option value="trophy_6">Компас (trophy_6)</option>
+                </optgroup>
+                <optgroup label="🍞 Фронтовой быт">
+                    <option value="life_1">Котелок (life_1)</option>
+                    <option value="life_2">Ложка (life_2)</option>
+                    <option value="life_3">Мешок (life_3)</option>
+                    <option value="life_4">Гармонь (life_4)</option>
+                    <option value="life_5">Свеча в банке (life_5)</option>
+                    <option value="life_6">Фляга (life_6)</option>
+                </optgroup>
+            </select>
+
+            <button class="btn-action" onclick="sendTrophyRequest()">📩 Отправить просьбу сейчас</button>
+
+            <div style="margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="auto-trophy-checkbox" onchange="toggleAutoTrophy(this.checked)">
+                    <span>🔁 Запрашивать автоматически по истечении времени (КД)</span>
+                </label>
+                <div id="auto-timer-status" class="timer-badge" style="display: none;">
+                    ⏳ Автопросьба активна. Ожидание КД...
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         const BACKEND_URL = "http://localhost:8000";
+        let autoTrophyInterval = null;
 
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -134,14 +187,7 @@
             const banner = document.getElementById('sync-banner');
             const token = document.getElementById('initdata-input').value.trim();
 
-            if (!token) {
-                banner.className = 'sync-status error';
-                banner.innerText = '❌ Токен пустой!';
-                return;
-            }
-
-            banner.className = 'sync-status';
-            banner.innerText = '🔄 Загрузка данных...';
+            if (!token) { return; }
 
             try {
                 const response = await fetch(`${BACKEND_URL}/api/sync`, {
@@ -151,12 +197,11 @@
                 });
 
                 const result = await response.json();
-
                 if (result.status === 'success' && result.game_data && result.game_data.state) {
                     banner.className = 'sync-status success';
                     banner.innerText = '✅ Синхронизация успешна!';
-
                     const s = result.game_data.state;
+
                     document.getElementById('user-name').innerText = `@${s.name || 'Fow'} (Lvl ${s.level || 1})`;
                     document.getElementById('user-rubles').innerText = `${s.rubles || 0} ₽`;
                     
@@ -169,109 +214,55 @@
                     document.getElementById('res-bonds').innerText = s.bonds ?? 0;
                     document.getElementById('res-powder').innerText = s.powder ?? 0;
 
-                    document.getElementById('boss-kills-today').innerText = `${s.bossKillsToday ?? 0} (доп. ${s.bossExtraToday ?? 0})`;
-                    renderBosses(s.activeBosses || {});
-                } else {
-                    banner.className = 'sync-status error';
-                    banner.innerText = result.message || 'Ошибка';
+                    // Если у профиля был прошлый запрос
+                    if (s.collectionRequest && s.collectionRequest.items && s.collectionRequest.items.length > 0) {
+                        const lastItem = s.collectionRequest.items[0];
+                        const select = document.getElementById('trophy-select');
+                        if ([...select.options].some(o => o.value === lastItem)) {
+                            select.value = lastItem;
+                        }
+                    }
                 }
-            } catch (err) {
-                banner.className = 'sync-status error';
-                banner.innerText = '⚠️ Сервер Python не запущен!';
-            }
+            } catch (err) {}
         }
 
-        function renderBosses(activeBosses) {
-            const container = document.getElementById('active-bosses-list');
-            const keys = Object.keys(activeBosses);
-
-            if (keys.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 12px;">Нет активных боссов.</div>';
-                return;
-            }
-
-            // 10 Пресетов атак
-            const presetsHtml = `
-                <option value="1">⚙️ Пресет 1: Быстрый одиночный удар</option>
-                <option value="2">⚙️ Пресет 2: Усиленный удар х2</option>
-                <option value="3">⚙️ Пресет 3: Серия ударов х5</option>
-                <option value="4">⚙️ Пресет 4: Осколочный залп</option>
-                <option value="5">⚙️ Пресет 5: Фугасный обстрел</option>
-                <option value="6">⚙️ Пресет 6: Зажигательный залп</option>
-                <option value="7">⚙️ Пресет 7: Тактический удар в уязвимость</option>
-                <option value="8">⚙️ Пресет 8: Штурмовой налет</option>
-                <option value="9">⚙️ Пресет 9: Максимальный урон (Все силы)</option>
-                <option value="10">⚙️ Пресет 10: Контрольный добивающий удар</option>
-            `;
-
-            let html = '';
-            keys.forEach(bossKey => {
-                const b = activeBosses[bossKey];
-                const hpPercent = Math.max(0, Math.min(100, (b.hp / b.maxHp) * 100)).toFixed(1);
-
-                html += `
-                    <div class="boss-card">
-                        <div class="boss-header">
-                            <div class="boss-title">👹 Босс: ${b.id.toUpperCase()}</div>
-                            <div class="boss-badge">Урон: ${b.myDamage || 0}</div>
-                        </div>
-                        <div class="boss-stats">
-                            <span>Здоровье: ${b.hp.toLocaleString()} / ${b.maxHp.toLocaleString()}</span>
-                            <span>${hpPercent}%</span>
-                        </div>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill" style="width: ${hpPercent}%;"></div>
-                        </div>
-                        <div class="boss-stats" style="margin-top: 4px;">
-                            <span>Союзный урон: ${(b.allyDamage || 0).toLocaleString()}</span>
-                            <span>Ударов: ${b.strikes || 0}</span>
-                        </div>
-
-                        <!-- Панель выбора пресета и атаки -->
-                        <div class="attack-panel">
-                            <div class="attack-label">Выберите пресет атаки:</div>
-                            <select id="preset-select-${b.id}">
-                                ${presetsHtml}
-                            </select>
-                            <button class="btn-attack" onclick="attackBoss('${b.id}')">⚔️ Напасть на босса</button>
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        async function attackBoss(bossId) {
+        async function sendTrophyRequest() {
             const token = document.getElementById('initdata-input').value.trim();
-            const selectElem = document.getElementById(`preset-select-${bossId}`);
-            const presetId = parseInt(selectElem.value);
+            const itemId = document.getElementById('trophy-select').value;
             const banner = document.getElementById('sync-banner');
 
-            if (!token) {
-                alert('Сначала введите токен и синхронизируйте аккаунт!');
-                return;
-            }
+            if (!token) { alert('Введите токен!'); return; }
 
             banner.className = 'sync-status';
-            banner.innerText = `⚔️ Выполняется атака на босса ${bossId.toUpperCase()} (Пресет #${presetId})...`;
+            banner.innerText = `📩 Отправка просьбы о предметe ${itemId}...`;
 
             try {
-                const response = await fetch(`${BACKEND_URL}/api/attack`, {
+                const res = await fetch(`${BACKEND_URL}/api/collection/request`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ initData: token, presetId: presetId, bossId: bossId })
+                    body: JSON.stringify({ initData: token, itemId: itemId })
                 });
-
-                const result = await response.json();
+                const result = await res.json();
                 banner.className = 'sync-status success';
                 banner.innerText = `✅ ${result.message}`;
-                
-                // Автоматически обновляем данные аккаунта после удара
-                setTimeout(syncWithGame, 1500);
             } catch (err) {
                 banner.className = 'sync-status error';
-                banner.innerText = '⚠️ Ошибка при отправке атаки!';
+                banner.innerText = '⚠️ Ошибка отправки просьбы!';
+            }
+        }
+
+        function toggleAutoTrophy(enabled) {
+            const badge = document.getElementById('auto-timer-status');
+            if (enabled) {
+                badge.style.display = 'block';
+                // Сразу делаем запрос и включаем проверку каждые 15 минут
+                sendTrophyRequest();
+                autoTrophyInterval = setInterval(() => {
+                    sendTrophyRequest();
+                }, 15 * 60 * 1000); 
+            } else {
+                badge.style.display = 'none';
+                if (autoTrophyInterval) clearInterval(autoTrophyInterval);
             }
         }
     </script>
