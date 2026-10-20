@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrenchBot App</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f1117;
+            --card-bg: #161922;
+            --accent-green: #00c853;
+            --accent-orange: #ff9100;
+            --border-color: #2a2e3d;
+            --text-main: #ffffff;
+            --text-muted: #8b92a5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 12px;
+        }
+
+        /* Шапка пользователя */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            color: #a855f7;
+        }
+
+        .btn-auth {
+            background: #2b2111;
+            color: #ffb74d;
+            border: 1px solid #ff9100;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Статус автопилота */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .badge-stopped {
+            background: #3a1519;
+            color: #ff4d4f;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid #ff4d4f;
+        }
+
+        .server-ver {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* Главная кнопка запуска */
+        .btn-launch {
+            width: 100%;
+            background: linear-gradient(180deg, #00e676 0%, #00a844 100%);
+            color: #000;
+            font-weight: 900;
+            font-size: 16px;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .btn-launch:active {
+            transform: scale(0.98);
+        }
+
+        /* Сетка ресурсов */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .res-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .res-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .res-value {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Вкладки параметров */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            margin-bottom: 12px;
+            padding-bottom: 4px;
+        }
+
+        .tab {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: #ff9100;
+            color: #000;
+            border-color: #ff9100;
+        }
+
+        /* Блок настроек модуля */
+        .module-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-container input {
+            width: 18px;
+            height: 18px;
+            accent-color: #ff9100;
+            margin-top: 2px;
+        }
+
+        .module-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .module-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Выбор режимов (Radio) */
+        .section-title {
+            font-size: 11px;
+            color: var(--accent-orange);
+            font-weight: 800;
+            margin: 12px 0 8px 0;
+            text-transform: uppercase;
+        }
+
+        .mode-option {
+            background: #11131a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .mode-option.selected {
+            border-color: var(--accent-orange);
+            background: #1f1a12;
+        }
+
+        .mode-option input {
+            accent-color: var(--accent-orange);
+            margin-top: 2px;
+        }
+
+        .mode-text .title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .mode-text .desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка -->
+    <div class="header">
+        <div class="user-info">
+            <span>👤</span>
+            <span id="username">@user</span>
+        </div>
+        <button class="btn-auth" onclick="getAuthData()">🔑 Авторизация</button>
+    </div>
+
+    <!-- Панель статуса -->
+    <div class="status-bar">
+        <div class="badge-stopped" id="status-badge">⏸ ОСТАНОВЛЕН</div>
+        <div class="server-ver">24/7 Сервер v1.0</div>
+    </div>
+
+    <!-- Запуск -->
+    <button class="btn-launch" id="btn-toggle" onclick="toggleBot()">▶ ЗАПУСТИТЬ АВТОПИЛОТ</button>
+
+    <!-- Ресурсы -->
+    <div class="resources-grid">
+        <div class="res-card">
+            <div class="res-title">⚡ Энергия</div>
+            <div class="res-value" id="res-energy">100/100</div>
+        </div>
+        <div class="res-card">
+            <div class="res-title">🪙 Золото</div>
+            <div class="res-value" id="res-gold">0</div>
+        </div>
+        <div class="res-card">
+            <div class="res-title">🎯 Таланты</div>
+            <div class="res-value" id="res-talents">0</div>
+        </div>
+        <div class="res-card">
+            <div class="res-title">💥 Урон</div>
+            <div class="res-value" id="res-damage">0</div>
+        </div>
+    </div>
+
+    <!-- Вкладки -->
+    <div class="tabs">
+        <div class="tab active">👹 Боссы</div>
+        <div class="tab">🏢 Бизнесы</div>
+        <div class="tab">🛠 Работы</div>
+        <div class="tab">⚔️ PvP Арена</div>
+    </div>
+
+    <!-- Настройка Модуля -->
+    <div class="module-box">
+        <label class="checkbox-container">
+            <input type="checkbox" id="module-bosses" checked>
+            <div>
+                <div class="module-title">Включить модуль боссов</div>
+                <div class="module-desc">Автоатаки, инвайты, контроль ресурсов и снарядов</div>
+            </div>
+        </label>
+    </div>
+
+    <!-- Режимы -->
+    <div class="section-title">ВЫБЕРИТЕ РЕЖИМ БОССОВ:</div>
+
+    <div class="mode-option selected" onclick="selectMode(this, 'mode1')">
+        <input type="radio" name="boss_mode" id="mode1" checked>
+        <div class="mode-text">
+            <div class="title">1. Создавать и принимать инвайты</div>
+            <div class="desc">Бот сам начинает бои с выбранными боссами и принимает приглашения от друзей.</div>
+        </div>
+    </div>
+
+    <div class="mode-option" onclick="selectMode(this, 'mode2')">
+        <input type="radio" name="boss_mode" id="mode2">
+        <div class="mode-text">
+            <div class="title">2. Чисто принимать инвайты</div>
+            <div class="desc">Экономит ресурсы: никогда не создает бои сам, а атакует только по приглашениям.</div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram WebApp SDK
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем окно во весь экран
+
+        // Получаем имя пользователя из Telegram
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            document.getElementById('username').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
+        }
+
+        let isRunning = false;
+
+        function toggleBot() {
+            isRunning = !isRunning;
+            const btn = document.getElementById('btn-toggle');
+            const badge = document.getElementById('status-badge');
+
+            if (isRunning) {
+                btn.innerText = '⏸ ОСТАНОВИТЬ АВТОПИЛОТ';
+                btn.style.background = 'linear-gradient(180deg, #ff4d4f 0%, #c5221f 100%)';
+                badge.innerText = '▶ РАБОТАЕТ';
+                badge.className = 'badge-running';
+                badge.style.background = '#1b381e';
+                badge.style.color = '#00c853';
+                badge.style.borderColor = '#00c853';
+
+                // Отправляем сигнал на сервер или в бота
+                tg.sendData(JSON.stringify({ action: "start", initData: tg.initData }));
+            } else {
+                btn.innerText = '▶ ЗАПУСТИТЬ АВТОПИЛОТ';
+                btn.style.background = 'linear-gradient(180deg, #00e676 0%, #00a844 100%)';
+                badge.innerText = '⏸ ОСТАНОВЛЕН';
+                badge.style.background = '#3a1519';
+                badge.style.color = '#ff4d4f';
+                badge.style.borderColor = '#ff4d4f';
+
+                tg.sendData(JSON.stringify({ action: "stop" }));
+            }
+        }
+
+        function selectMode(element, modeId) {
+            document.querySelectorAll('.mode-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById(modeId).checked = true;
+        }
+
+        function getAuthData() {
+            // Вывод initData для проверки
+            alert("Ваш Telegram initData скопирован!");
+            console.log(tg.initData);
+        }
+    </script>
+</body>
+</html>
