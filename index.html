@@ -130,11 +130,65 @@
 
     <div id="fronts-tab" class="tab-content">
         <div class="card">
-            <div class="card-title" style="margin-bottom: 8px;">🗺 Автопроход фронтов</div>
-            <select id="front-select">
-                <option value="1-1">Фронт 1-1</option><option value="1-2">Фронт 1-2</option>
-                <option value="2-1">Фронт 2-1</option><option value="3-4">Фронт 3-4</option>
-            </select>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Выберите город и локацию:</div>
+<select id="front-select">
+    <optgroup label="🇺🇦 Киев (Фронт 1)">
+        <option value="1-1">1-1: Киев — Локация 1</option>
+        <option value="1-2">1-2: Киев — Локация 2</option>
+        <option value="1-3">1-3: Киев — Локация 3</option>
+        <option value="1-4">1-4: Киев — Локация 4</option>
+        <option value="1-5">1-5: Киев — Локация 5</option>
+    </optgroup>
+    <optgroup label="⚓ Одесса (Фронт 2)">
+        <option value="2-1">2-1: Одесса — Локация 1</option>
+        <option value="2-2">2-2: Одесса — Локация 2</option>
+        <option value="2-3">2-3: Одесса — Локация 3</option>
+        <option value="2-4">2-4: Одесса — Локация 4</option>
+        <option value="2-5">2-5: Одесса — Локация 5</option>
+    </optgroup>
+    <optgroup label="🏛 Москва (Фронт 3)">
+        <option value="3-1">3-1: Москва — Локация 1</option>
+        <option value="3-2">3-2: Москва — Локация 2</option>
+        <option value="3-3">3-3: Москва — Локация 3</option>
+        <option value="3-4">3-4: Москва — Локация 4</option>
+        <option value="3-5">3-5: Москва — Локация 5</option>
+    </optgroup>
+    <optgroup label="🌾 Воронеж (Фронт 4)">
+        <option value="4-1">4-1: Воронеж — Локация 1</option>
+        <option value="4-2">4-2: Воронеж — Локация 2</option>
+        <option value="4-3">4-3: Воронеж — Локация 3</option>
+        <option value="4-4">4-4: Воронеж — Локация 4</option>
+        <option value="4-5">4-5: Воронеж — Локация 5</option>
+    </optgroup>
+    <optgroup label="🌊 Тамань (Фронт 5)">
+        <option value="5-1">5-1: Тамань — Локация 1</option>
+        <option value="5-2">5-2: Тамань — Локация 2</option>
+        <option value="5-3">5-3: Тамань — Локация 3</option>
+        <option value="5-4">5-4: Тамань — Локация 4</option>
+        <option value="5-5">5-5: Тамань — Локация 5</option>
+    </optgroup>
+    <optgroup label="🏭 Сталинград (Фронт 6)">
+        <option value="6-1">6-1: Сталинград — Локация 1</option>
+        <option value="6-2">6-2: Сталинград — Локация 2</option>
+        <option value="6-3">6-3: Сталинград — Локация 3</option>
+        <option value="6-4">6-4: Сталинград — Локация 4</option>
+        <option value="6-5">6-5: Сталинград — Локация 5</option>
+    </optgroup>
+    <optgroup label="🛡 Ржев (Фронт 7)">
+        <option value="7-1">7-1: Ржев — Локация 1</option>
+        <option value="7-2">7-2: Ржев — Локация 2</option>
+        <option value="7-3">7-3: Ржев — Локация 3</option>
+        <option value="7-4">7-4: Ржев — Локация 4</option>
+        <option value="7-5">7-5: Ржев — Локация 5</option>
+    </optgroup>
+    <optgroup label="❄️ Мурманск (Фронт 8)">
+        <option value="8-1">8-1: Мурманск — Локация 1</option>
+        <option value="8-2">8-2: Мурманск — Локация 2</option>
+        <option value="8-3">8-3: Мурманск — Локация 3</option>
+        <option value="8-4">8-4: Мурманск — Локация 4</option>
+        <option value="8-5">8-5: Мурманск — Локация 5</option>
+    </optgroup>
+</select>
             <label class="checkbox-container"><input type="checkbox" id="spend-supply-checkbox" checked> Тратить топливо</label>
             <button class="btn-action" onclick="runFrontAuto()">🚀 Запустить автопроход</button>
         </div>
