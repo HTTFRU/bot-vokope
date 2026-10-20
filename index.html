@@ -9,7 +9,6 @@
         :root {
             --bg-color: #0b0d12;
             --card-bg: #161922;
-            --card-hover: #1e2230;
             --accent-green: #00e676;
             --accent-gold: #ffd700;
             --accent-red: #ff5252;
@@ -18,106 +17,65 @@
             --text-muted: #8b92a5;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); padding: 10px; max-width: 600px; margin: 0 auto; }
 
-        /* Верхняя компактная панель ресурсов */
         .top-resource-bar {
             background: linear-gradient(180deg, #1f2432 0%, #12151e 100%);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            border: 1px solid var(--border-color); border-radius: 12px; padding: 10px; margin-bottom: 10px;
         }
-
         .user-header {
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 8px;
-            font-size: 13px; font-weight: bold;
+            border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 8px; font-size: 13px; font-weight: bold;
         }
         .user-badge { color: #a855f7; display: flex; align-items: center; gap: 6px; }
 
-        .res-strip {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-        }
-
-        .res-item {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 6px;
-            padding: 4px 6px;
-            text-align: center;
-        }
-        .res-item .lbl { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+        .res-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .res-item { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 4px 6px; text-align: center; }
+        .res-item .lbl { font-size: 10px; color: var(--text-muted); }
         .res-item .val { font-size: 13px; font-weight: bold; color: var(--accent-gold); margin-top: 2px; }
 
-        /* Авторизация и кнопка */
-        .auth-box {
-            background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 10px; padding: 10px; margin-bottom: 10px;
-        }
-        textarea {
-            width: 100%; height: 38px; background: #07080b; border: 1px solid var(--border-color);
-            color: #fff; padding: 6px 8px; border-radius: 6px; font-size: 11px; resize: none; margin-bottom: 6px;
-        }
-        .btn-sync {
-            width: 100%; background: #112a18; color: var(--accent-green); border: 1px solid #00c853;
-            padding: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; transition: 0.2s;
-        }
-        .btn-sync:hover { background: #1b3e24; }
+        .auth-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; margin-bottom: 10px; }
+        textarea { width: 100%; height: 38px; background: #07080b; border: 1px solid var(--border-color); color: #fff; padding: 6px 8px; border-radius: 6px; font-size: 11px; resize: none; margin-bottom: 6px; }
+        .btn-sync { width: 100%; background: #112a18; color: var(--accent-green); border: 1px solid #00c853; padding: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; }
 
-        .sync-status {
-            padding: 6px 10px; border-radius: 6px; font-size: 11px; text-align: center; margin-bottom: 10px; display: none;
-        }
+        .sync-status { padding: 6px 10px; border-radius: 6px; font-size: 11px; text-align: center; margin-bottom: 10px; display: none; }
         .sync-status.success { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); display: block; }
         .sync-status.error { background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); display: block; }
 
-        /* Вкладки */
         .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-        .tab-btn {
-            flex: 1; padding: 10px; background: var(--card-bg); border: 1px solid var(--border-color);
-            color: var(--text-muted); border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center;
-        }
-        .tab-btn.active { background: #232838; border-color: #4a526d; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .tab-btn { flex: 1; padding: 10px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; }
+        .tab-btn.active { background: #232838; border-color: #4a526d; color: #fff; }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Карточки боссов */
-        .boss-card {
-            background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 10px; padding: 12px; margin-bottom: 10px;
-        }
+        .boss-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
         .boss-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .boss-title { font-size: 14px; font-weight: bold; color: #fff; }
         .boss-badge { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: rgba(255,215,0,0.15); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
 
-        .progress-bar-bg {
-            width: 100%; height: 10px; background: #07080b; border-radius: 5px; overflow: hidden; margin: 6px 0; border: 1px solid var(--border-color);
-        }
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff5252, #ff7b00); width: 0%; transition: width 0.4s ease; }
-
+        .progress-bar-bg { width: 100%; height: 8px; background: #07080b; border-radius: 4px; overflow: hidden; margin: 6px 0; border: 1px solid var(--border-color); }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff5252, #ff7b00); width: 0%; }
         .boss-stats { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
-        .limit-info {
-            background: rgba(255,255,255,0.03); border: 1px dashed var(--border-color);
-            border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 12px;
-        }
+
+        .limit-info { background: rgba(255,255,255,0.03); border: 1px dashed var(--border-color); border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 12px; }
+
+        /* Контроллер атак и пресетов */
+        .attack-panel { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); }
+        .attack-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+        select { width: 100%; background: #07080b; border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; font-size: 11px; margin-bottom: 8px; }
+        .btn-attack { width: 100%; background: #3a1111; color: var(--accent-red); border: 1px solid var(--accent-red); padding: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; }
+        .btn-attack:hover { background: #4e1717; }
     </style>
 </head>
 <body>
 
-    <!-- Верхний бар ресурсов -->
     <div class="top-resource-bar">
         <div class="user-header">
-            <div class="user-badge">
-                <span>🎖</span> <span id="user-name">@Fow (Lvl --)</span>
-            </div>
+            <div class="user-badge"><span>🎖</span> <span id="user-name">@Fow (Lvl --)</span></div>
             <div style="color: var(--accent-green);" id="user-rubles">0 ₽</div>
         </div>
-
         <div class="res-strip">
             <div class="res-item"><div class="lbl">⛽ Топливо</div><div class="val" id="res-fuel">--</div></div>
             <div class="res-item"><div class="lbl">🏷 Жетоны</div><div class="val" id="res-tokens">--</div></div>
@@ -132,7 +90,6 @@
         </div>
     </div>
 
-    <!-- Авторизация -->
     <div class="auth-box">
         <textarea id="initdata-input" placeholder="Вставьте токен: Bearer 25a3ddbc..."></textarea>
         <button class="btn-sync" onclick="syncWithGame()">🔄 Синхронизировать</button>
@@ -140,34 +97,26 @@
 
     <div class="sync-status" id="sync-banner"></div>
 
-    <!-- Переключатель вкладок -->
     <div class="tabs">
         <div class="tab-btn active" onclick="switchTab('main-tab', this)">📊 Главная</div>
-        <div class="tab-btn" onclick="switchTab('bosses-tab', this)">👹 Боссы и Лимиты</div>
+        <div class="tab-btn" onclick="switchTab('bosses-tab', this)">👹 Боссы и Атака</div>
     </div>
 
-    <!-- Вкладка 1: Главная -->
     <div id="main-tab" class="tab-content active">
         <div class="boss-card">
-            <div class="boss-title" style="margin-bottom: 6px;">ℹ️ Состояние сессии</div>
-            <div style="font-size: 12px; color: var(--text-muted);">
-                Сессия активна. Данные успешно получены с сервера <code style="color: var(--accent-gold);">zapfront.net</code>.
-            </div>
+            <div class="boss-title" style="margin-bottom: 6px;">ℹ️ Статус сессии</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Аккаунт успешно подключен. Выберите вкладку «Боссы и Атака» для управления рейдами.</div>
         </div>
     </div>
 
-    <!-- Вкладка 2: Боссы -->
     <div id="bosses-tab" class="tab-content">
-        <!-- Блок лимитов на сегодня -->
         <div class="limit-info">
             <span>🎯 Убийств боссов сегодня:</span>
             <strong id="boss-kills-today" style="color: var(--accent-gold);">-- / --</strong>
         </div>
 
         <div id="active-bosses-list">
-            <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px;">
-                Синхронизируйте аккаунт, чтобы увидеть активных боссов.
-            </div>
+            <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px;">Синхронизируйте аккаунт для загрузки боссов.</div>
         </div>
     </div>
 
@@ -183,11 +132,11 @@
 
         async function syncWithGame() {
             const banner = document.getElementById('sync-banner');
-            const initDataVal = document.getElementById('initdata-input').value.trim();
+            const token = document.getElementById('initdata-input').value.trim();
 
-            if (!initDataVal) {
+            if (!token) {
                 banner.className = 'sync-status error';
-                banner.innerText = '❌ Вставьте токен в поле!';
+                banner.innerText = '❌ Токен пустой!';
                 return;
             }
 
@@ -198,19 +147,17 @@
                 const response = await fetch(`${BACKEND_URL}/api/sync`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ initData: initDataVal })
+                    body: JSON.stringify({ initData: token })
                 });
 
                 const result = await response.json();
 
                 if (result.status === 'success' && result.game_data && result.game_data.state) {
                     banner.className = 'sync-status success';
-                    banner.innerText = '✅ Аккаунт синхронизирован!';
+                    banner.innerText = '✅ Синхронизация успешна!';
 
                     const s = result.game_data.state;
-
-                    // Обновляем верхний бар ресурсов
-                    document.getElementById('user-name').innerText = `@${s.name || 'xuyundz'} (Lvl ${s.level || 1})`;
+                    document.getElementById('user-name').innerText = `@${s.name || 'Fow'} (Lvl ${s.level || 1})`;
                     document.getElementById('user-rubles').innerText = `${s.rubles || 0} ₽`;
                     
                     document.getElementById('res-fuel').innerText = s.supply ?? 0;
@@ -222,16 +169,11 @@
                     document.getElementById('res-bonds').innerText = s.bonds ?? 0;
                     document.getElementById('res-powder').innerText = s.powder ?? 0;
 
-                    // Обновляем лимиты боссов
-                    const killsToday = s.bossKillsToday ?? 0;
-                    const extraToday = s.bossExtraToday ?? 0;
-                    document.getElementById('boss-kills-today').innerText = `${killsToday} (доп. ${extraToday})`;
-
-                    // Рендерим активных боссов
+                    document.getElementById('boss-kills-today').innerText = `${s.bossKillsToday ?? 0} (доп. ${s.bossExtraToday ?? 0})`;
                     renderBosses(s.activeBosses || {});
                 } else {
                     banner.className = 'sync-status error';
-                    banner.innerText = result.message || ' Ошибка получения данных';
+                    banner.innerText = result.message || 'Ошибка';
                 }
             } catch (err) {
                 banner.className = 'sync-status error';
@@ -247,6 +189,20 @@
                 container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 12px;">Нет активных боссов.</div>';
                 return;
             }
+
+            // 10 Пресетов атак
+            const presetsHtml = `
+                <option value="1">⚙️ Пресет 1: Быстрый одиночный удар</option>
+                <option value="2">⚙️ Пресет 2: Усиленный удар х2</option>
+                <option value="3">⚙️ Пресет 3: Серия ударов х5</option>
+                <option value="4">⚙️ Пресет 4: Осколочный залп</option>
+                <option value="5">⚙️ Пресет 5: Фугасный обстрел</option>
+                <option value="6">⚙️ Пресет 6: Зажигательный залп</option>
+                <option value="7">⚙️ Пресет 7: Тактический удар в уязвимость</option>
+                <option value="8">⚙️ Пресет 8: Штурмовой налет</option>
+                <option value="9">⚙️ Пресет 9: Максимальный урон (Все силы)</option>
+                <option value="10">⚙️ Пресет 10: Контрольный добивающий удар</option>
+            `;
 
             let html = '';
             keys.forEach(bossKey => {
@@ -270,11 +226,53 @@
                             <span>Союзный урон: ${(b.allyDamage || 0).toLocaleString()}</span>
                             <span>Ударов: ${b.strikes || 0}</span>
                         </div>
+
+                        <!-- Панель выбора пресета и атаки -->
+                        <div class="attack-panel">
+                            <div class="attack-label">Выберите пресет атаки:</div>
+                            <select id="preset-select-${b.id}">
+                                ${presetsHtml}
+                            </select>
+                            <button class="btn-attack" onclick="attackBoss('${b.id}')">⚔️ Напасть на босса</button>
+                        </div>
                     </div>
                 `;
             });
 
             container.innerHTML = html;
+        }
+
+        async function attackBoss(bossId) {
+            const token = document.getElementById('initdata-input').value.trim();
+            const selectElem = document.getElementById(`preset-select-${bossId}`);
+            const presetId = parseInt(selectElem.value);
+            const banner = document.getElementById('sync-banner');
+
+            if (!token) {
+                alert('Сначала введите токен и синхронизируйте аккаунт!');
+                return;
+            }
+
+            banner.className = 'sync-status';
+            banner.innerText = `⚔️ Выполняется атака на босса ${bossId.toUpperCase()} (Пресет #${presetId})...`;
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/attack`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ initData: token, presetId: presetId, bossId: bossId })
+                });
+
+                const result = await response.json();
+                banner.className = 'sync-status success';
+                banner.innerText = `✅ ${result.message}`;
+                
+                // Автоматически обновляем данные аккаунта после удара
+                setTimeout(syncWithGame, 1500);
+            } catch (err) {
+                banner.className = 'sync-status error';
+                banner.innerText = '⚠️ Ошибка при отправке атаки!';
+            }
         }
     </script>
 </body>
